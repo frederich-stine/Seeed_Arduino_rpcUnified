@@ -17,6 +17,10 @@ Seeed Arduino rpcUnified is the SAMD side of eRPC protocol software. The eRPC pr
 
 [**More detailed documentation**](https://wiki.seeedstudio.com/Wio-Terminal-Wi-Fi/)
 
+## ** Fork Information **
+
+This fork allows for interoperability with FreeRTOS based designs. The scheduler is not started by default and must be started in user code.
+
 ## **License**
 
 This software is written by seeed studio and is licensed under The MIT License. Check License.txt for more information.

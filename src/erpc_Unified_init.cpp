@@ -131,7 +131,7 @@ void erpc_init()
     add_services(&g_server);
 
     serverThread.start();
-    clientThread.start();
+    //clientThread.start();
 
     g_client->setServer(&g_server);
     g_client->setServerThreadId(serverThread.getThreadId());
@@ -143,7 +143,9 @@ void _wrap_body()
 
     erpc_init();
 
-    vTaskStartScheduler();
+    _real_body();
+
+    //vTaskStartScheduler();
 
     while (1)
         ;
