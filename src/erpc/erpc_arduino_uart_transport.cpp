@@ -9,6 +9,7 @@
 #include "erpc_arduino_uart_transport.h"
 #include "Arduino.h"
 #include "wiring_private.h"
+#include "rpc_unified_log.h"
 
 using namespace erpc;
 
@@ -268,17 +269,30 @@ SercomParityMode EUart::extractParity(uint16_t config)
   }
 }
 
-void EUart::waitForRead()
+int EUart::waitForRead()
 {
   noInterrupts();
   if (available() > 0)
   {
     interrupts();
-    return;
+    return kErpcStatus_Success;
   }
   is_waiting_for_read = true;
   interrupts();
-  sem_read.get(Semaphore::kWaitForever);
+  // If we wait longer than 60s system is deadlocked
+  if (!sem_read.get(6000000)) {
+    RPC_ERROR("System Deadlocked");
+    is_waiting_for_read = false;
+    sem_read.put();
+    pinMode(RTL8720D_CHIP_PU, OUTPUT);
+    digitalWrite(RTL8720D_CHIP_PU, LOW);
+    delay(100);
+    digitalWrite(RTL8720D_CHIP_PU, HIGH);
+    delay(100);
+    return kErpcStatus_Timeout;
+  }
+  //sem_read.get(Semaphore::kWaitForever);
+  return kErpcStatus_Success;
 }
 
 void EUart::waitForWrite(size_t n)
@@ -326,9 +340,15 @@ erpc_status_t UartTransport::init(void)
 erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
   uint32_t bytesRead = 0;
+  int retVal = 0;
   while (bytesRead < size)
   {
-    waitMessage();
+    retVal = waitMessage();
+    if (retVal != kErpcStatus_Success) {
+      RPC_ERROR("Bytes read: %u", bytesRead);
+      RPC_ERROR("Size: %u", size);
+      return retVal;
+    }
 
     const int c = m_uartDrv->read();
     if (c < 0) continue;
@@ -360,7 +380,7 @@ bool UartTransport::hasMessage()
   return false;
 }
 
-void UartTransport::waitMessage()
+int UartTransport::waitMessage()
 {
-  m_uartDrv->waitForRead();
+  return m_uartDrv->waitForRead();
 }

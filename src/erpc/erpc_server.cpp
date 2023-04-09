@@ -9,6 +9,7 @@
 
 #include "erpc_server.h"
 #include "assert.h"
+#include "rpc_unified_log.h"
 
 using namespace erpc;
 

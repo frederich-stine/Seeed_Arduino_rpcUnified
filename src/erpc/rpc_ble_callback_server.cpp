@@ -9,6 +9,7 @@
 #include <new>
 #include "erpc_port.h"
 #include "erpc_manually_constructed.h"
+#include "rpc_unified_log.h"
 
 #if 10704 != ERPC_VERSION_NUMBER
 #error "The generated shim code version is different to the rest of eRPC code."
@@ -74,6 +75,7 @@ static void free_binary_t_struct(binary_t * data)
 // Call the correct server shim based on method unique ID.
 erpc_status_t rpc_ble_callback_service::handleInvocation(uint32_t methodId, uint32_t sequence, Codec * codec, MessageBufferFactory *messageFactory)
 {
+	//RPC_ERROR("C: %d", methodId);
     switch (methodId)
     {
         case krpc_ble_callback_rpc_ble_handle_gap_msg_id:

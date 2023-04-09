@@ -90,7 +90,7 @@ namespace erpc
      * 
      * @retval wait until a message is available
      */
-        virtual void waitMessage(void) { }
+        virtual int waitMessage(void) { }
     };
 
     /*!

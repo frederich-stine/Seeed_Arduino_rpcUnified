@@ -48,7 +48,7 @@ class HardwareSerialEx : public HardwareSerial
     using Print::write; // pull in write(str) and write(buf, size) from Print
     virtual operator bool() = 0;
 
-    virtual void waitForRead() = 0;
+    virtual int waitForRead() = 0;
     virtual void waitForWrite(size_t) = 0;
 };
 
@@ -72,7 +72,7 @@ class EUart : public HardwareSerialEx
 
     operator bool() { return true; }
 
-    virtual void waitForRead() override;
+    virtual int waitForRead() override;
     virtual void waitForWrite(size_t n) override;
 
   private:
@@ -131,7 +131,7 @@ public:
 
     virtual bool hasMessage(void);
 
-    virtual void waitMessage(void) override;
+    virtual int waitMessage(void) override;
 
 protected:
     HardwareSerialEx *m_uartDrv; /*!< Access structure of the USART Driver */

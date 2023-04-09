@@ -104,7 +104,7 @@ void runServer(void *arg)
 }
 
 Thread serverThread(&runServer, configMAX_PRIORITIES, 8192, "runServer");
-Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 20480, "runClient");
+//Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 20480, "runClient");
 
 void erpc_init()
 {

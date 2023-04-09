@@ -8,6 +8,7 @@
  */
 
 #include "erpc_simple_server.h"
+#include "rpc_unified_log.h"
 
 using namespace erpc;
 
@@ -38,6 +39,7 @@ erpc_status_t SimpleServer::runInternal(void)
     uint32_t methodId;
     uint32_t sequence;
 
+    // This function is causing the error
     erpc_status_t err = runInternalBegin(&codec, buff, msgType, serviceId, methodId, sequence);
     if (err)
     {
@@ -60,6 +62,7 @@ erpc_status_t SimpleServer::runInternalBegin(Codec **codec, MessageBuffer &buff,
     }
 
     // Receive the next invocation request.
+    //RPC_ERROR("rcv");
     erpc_status_t err = m_transport->receive(&buff);
     if (err)
     {
@@ -200,8 +203,11 @@ erpc_status_t SimpleServer::poll(void)
 {
     if (m_isServerOn)
     {
+        erpc_status_t retcode;
         m_transport->waitMessage();
-        return runInternal();
+        retcode = runInternal();
+		//RPC_ERROR("%d", retcode);
+		return retcode;
     }
     return kErpcStatus_ServerIsDown;
 }
